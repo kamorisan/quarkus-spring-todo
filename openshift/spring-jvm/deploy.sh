@@ -27,6 +27,7 @@ else
 fi
 
 APP_NAME="spring-todo-jvm"
+REVISION_NAME="spring-todo-jvm-00001"
 GIT_REPO="${GIT_REPO:-https://github.com/kamorisan/quarkus-spring-todo.git}"
 GIT_BRANCH="${GIT_BRANCH:-main}"
 
@@ -227,6 +228,12 @@ else
 
     # Wait for deployment to be ready (max 5 minutes)
     oc rollout status deployment/$APP_NAME -n "$NAMESPACE" --timeout=300s
+
+if [ "$DEPLOY_MODE" = "serverless" ]; then
+    oc label revision/$REVISION_NAME -n "$NAMESPACE" app.openshift.io/runtime=spring-boot --overwrite
+else
+    oc label deployment/$APP_NAME -n "$NAMESPACE" app.openshift.io/runtime=spring-boot --overwrite
+fi
 
     echo ""
     echo "========================================="
