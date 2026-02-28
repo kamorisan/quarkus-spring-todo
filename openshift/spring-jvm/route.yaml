@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: spring-todo-jvm
+  labels:
+    app: spring-todo-jvm
+    app.kubernetes.io/name: spring-todo-jvm
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: quarkus-spring-comparison
+spec:
+  to:
+    kind: Service
+    name: spring-todo-jvm
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

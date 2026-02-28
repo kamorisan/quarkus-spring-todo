@@ -2,11 +2,30 @@
 set -e
 
 # ========================================
-# Quarkus Native Serverless Deployment Script
+# Quarkus Native Deployment Script
+# Supports both Serverless and Standard deployments
 # ========================================
 
+# Parse deployment mode
+DEPLOY_MODE="${1:-serverless}"
+
+if [[ "$DEPLOY_MODE" != "serverless" && "$DEPLOY_MODE" != "standard" ]]; then
+    echo "Error: Invalid deployment mode"
+    echo "Usage: $0 [serverless|standard]"
+    echo ""
+    echo "  serverless  - Deploy as Knative Service (scale-to-zero)"
+    echo "  standard    - Deploy as standard Deployment"
+    echo ""
+    exit 1
+fi
+
 # Configuration Variables
-NAMESPACE="${OPENSHIFT_NAMESPACE:-demo-serverless}"
+if [ "$DEPLOY_MODE" = "serverless" ]; then
+    NAMESPACE="${OPENSHIFT_NAMESPACE:-demo-serverless}"
+else
+    NAMESPACE="${OPENSHIFT_NAMESPACE:-demo-apps}"
+fi
+
 APP_NAME="quarkus-todo-native"
 GIT_REPO="${GIT_REPO:-https://github.com/kamorisan/quarkus-spring-todo.git}"
 GIT_BRANCH="${GIT_BRANCH:-main}"
@@ -15,12 +34,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "========================================="
 echo "  Deploying Quarkus Native to OpenShift"
-echo "  Serverless (Knative Serving)"
+if [ "$DEPLOY_MODE" = "serverless" ]; then
+    echo "  Mode: Serverless (Knative Serving)"
+else
+    echo "  Mode: Standard (Deployment)"
+fi
 echo "========================================="
 echo ""
 echo "Configuration:"
 echo "  Namespace: $NAMESPACE"
 echo "  App Name: $APP_NAME"
+echo "  Deploy Mode: $DEPLOY_MODE"
 echo "  Git Repo: $GIT_REPO"
 echo "  Git Branch: $GIT_BRANCH"
 echo ""
@@ -113,73 +137,140 @@ fi
 echo "Image: $IMAGE_REF"
 echo ""
 
-# Deploy Knative Service
-echo "Deploying Knative Service..."
-sed "s|IMAGE_PLACEHOLDER|$IMAGE_REF|g" "$SCRIPT_DIR/knative-service.yaml" | oc apply -f -
+# Deploy based on mode
+if [ "$DEPLOY_MODE" = "serverless" ]; then
+    # Deploy Knative Service
+    echo "Deploying Knative Service..."
+    sed "s|IMAGE_PLACEHOLDER|$IMAGE_REF|g" "$SCRIPT_DIR/knative-service.yaml" | oc apply -f -
 
-echo ""
-echo "Waiting for service to be ready..."
-echo "(This may take a minute)"
-echo ""
+    echo ""
+    echo "Waiting for service to be ready..."
+    echo "(This may take a minute)"
+    echo ""
 
-# Wait for service to be ready (max 5 minutes)
-TIMEOUT=300
-ELAPSED=0
-while [ $ELAPSED -lt $TIMEOUT ]; do
-    READY=$(oc get ksvc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "Unknown")
+    # Wait for service to be ready (max 5 minutes)
+    TIMEOUT=300
+    ELAPSED=0
+    while [ $ELAPSED -lt $TIMEOUT ]; do
+        READY=$(oc get ksvc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "Unknown")
 
-    if [ "$READY" = "True" ]; then
-        echo "✓ Service is ready!"
-        break
+        if [ "$READY" = "True" ]; then
+            echo "✓ Service is ready!"
+            break
+        fi
+
+        if [ $((ELAPSED % 15)) -eq 0 ]; then
+            echo "Waiting... ($ELAPSED/$TIMEOUT seconds)"
+        fi
+        sleep 5
+        ELAPSED=$((ELAPSED + 5))
+    done
+
+    if [ "$READY" != "True" ]; then
+        echo "Warning: Service did not become ready within $TIMEOUT seconds"
+        echo "Check status: oc get ksvc $APP_NAME -n $NAMESPACE"
+        echo "Check events: oc get events -n $NAMESPACE --sort-by='.lastTimestamp'"
     fi
 
-    if [ $((ELAPSED % 15)) -eq 0 ]; then
-        echo "Waiting... ($ELAPSED/$TIMEOUT seconds)"
+    echo ""
+    echo "========================================="
+    echo "  Deployment Complete!"
+    echo "========================================="
+    echo ""
+
+    # Get service URL
+    SERVICE_URL=$(oc get ksvc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.status.url}' 2>/dev/null || echo "")
+
+    if [ -n "$SERVICE_URL" ]; then
+        echo "Service URL: $SERVICE_URL"
+        echo ""
+        echo "Test the service:"
+        echo "  curl $SERVICE_URL/q/health/ready"
+        echo "  curl $SERVICE_URL/api/todos"
+        echo ""
+        echo "Create a todo:"
+        echo "  curl -X POST $SERVICE_URL/api/todos \\"
+        echo "    -H 'Content-Type: application/json' \\"
+        echo "    -d '{\"title\":\"Test from Serverless\",\"description\":\"Quarkus Native on OpenShift\"}'"
+        echo ""
+    else
+        echo "Could not retrieve service URL"
+        echo "Check with: oc get ksvc $APP_NAME -n $NAMESPACE"
     fi
-    sleep 5
-    ELAPSED=$((ELAPSED + 5))
-done
 
-if [ "$READY" != "True" ]; then
-    echo "Warning: Service did not become ready within $TIMEOUT seconds"
-    echo "Check status: oc get ksvc $APP_NAME -n $NAMESPACE"
-    echo "Check events: oc get events -n $NAMESPACE --sort-by='.lastTimestamp'"
-fi
-
-echo ""
-echo "========================================="
-echo "  Deployment Complete!"
-echo "========================================="
-echo ""
-
-# Get service URL
-SERVICE_URL=$(oc get ksvc "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.status.url}' 2>/dev/null || echo "")
-
-if [ -n "$SERVICE_URL" ]; then
-    echo "Service URL: $SERVICE_URL"
+    echo "View service details:"
+    echo "  oc get ksvc $APP_NAME -n $NAMESPACE"
     echo ""
-    echo "Test the service:"
-    echo "  curl $SERVICE_URL/q/health/ready"
-    echo "  curl $SERVICE_URL/api/todos"
+    echo "View logs:"
+    echo "  oc logs -f -l app=$APP_NAME -n $NAMESPACE"
     echo ""
-    echo "Create a todo:"
-    echo "  curl -X POST $SERVICE_URL/api/todos \\"
-    echo "    -H 'Content-Type: application/json' \\"
-    echo "    -d '{\"title\":\"Test from Serverless\",\"description\":\"Quarkus Native on OpenShift\"}'"
+    echo "Delete service:"
+    echo "  oc delete ksvc $APP_NAME -n $NAMESPACE"
+    echo "  oc delete bc $APP_NAME -n $NAMESPACE"
+    echo "  oc delete is $APP_NAME -n $NAMESPACE"
     echo ""
+
 else
-    echo "Could not retrieve service URL"
-    echo "Check with: oc get ksvc $APP_NAME -n $NAMESPACE"
-fi
+    # Deploy standard Deployment, Service, and Route
+    echo "Deploying Deployment..."
+    sed "s|IMAGE_PLACEHOLDER|$IMAGE_REF|g" "$SCRIPT_DIR/deployment.yaml" | oc apply -f -
 
-echo "View service details:"
-echo "  oc get ksvc $APP_NAME -n $NAMESPACE"
-echo ""
-echo "View logs:"
-echo "  oc logs -f -l app=$APP_NAME -n $NAMESPACE"
-echo ""
-echo "Delete service:"
-echo "  oc delete ksvc $APP_NAME -n $NAMESPACE"
-echo "  oc delete bc $APP_NAME -n $NAMESPACE"
-echo "  oc delete is $APP_NAME -n $NAMESPACE"
-echo ""
+    echo "Deploying Service..."
+    oc apply -f "$SCRIPT_DIR/service.yaml"
+
+    echo "Deploying Route..."
+    oc apply -f "$SCRIPT_DIR/route.yaml"
+
+    echo ""
+    echo "Waiting for deployment to be ready..."
+    echo ""
+
+    # Wait for deployment to be ready (max 5 minutes)
+    oc rollout status deployment/$APP_NAME -n "$NAMESPACE" --timeout=300s
+
+    echo ""
+    echo "========================================="
+    echo "  Deployment Complete!"
+    echo "========================================="
+    echo ""
+
+    # Get route URL
+    ROUTE_URL=$(oc get route "$APP_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || echo "")
+
+    if [ -n "$ROUTE_URL" ]; then
+        echo "Route URL: https://$ROUTE_URL"
+        echo ""
+        echo "Test the service:"
+        echo "  curl https://$ROUTE_URL/q/health/ready"
+        echo "  curl https://$ROUTE_URL/api/todos"
+        echo ""
+        echo "Create a todo:"
+        echo "  curl -X POST https://$ROUTE_URL/api/todos \\"
+        echo "    -H 'Content-Type: application/json' \\"
+        echo "    -d '{\"title\":\"Test from OpenShift\",\"description\":\"Quarkus Native Standard Deployment\"}'"
+        echo ""
+    else
+        echo "Could not retrieve route URL"
+        echo "Check with: oc get route $APP_NAME -n $NAMESPACE"
+    fi
+
+    echo "View deployment details:"
+    echo "  oc get deployment $APP_NAME -n $NAMESPACE"
+    echo ""
+    echo "View pods:"
+    echo "  oc get pods -n $NAMESPACE -l app=$APP_NAME"
+    echo ""
+    echo "View logs:"
+    echo "  oc logs -f -l app=$APP_NAME -n $NAMESPACE"
+    echo ""
+    echo "Scale deployment:"
+    echo "  oc scale deployment/$APP_NAME -n $NAMESPACE --replicas=3"
+    echo ""
+    echo "Delete resources:"
+    echo "  oc delete deployment $APP_NAME -n $NAMESPACE"
+    echo "  oc delete service $APP_NAME -n $NAMESPACE"
+    echo "  oc delete route $APP_NAME -n $NAMESPACE"
+    echo "  oc delete bc $APP_NAME -n $NAMESPACE"
+    echo "  oc delete is $APP_NAME -n $NAMESPACE"
+    echo ""
+fi

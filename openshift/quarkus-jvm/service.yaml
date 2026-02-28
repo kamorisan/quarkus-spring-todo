@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: quarkus-todo-jvm
+  labels:
+    app: quarkus-todo-jvm
+    app.kubernetes.io/name: quarkus-todo-jvm
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: quarkus-spring-comparison
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: quarkus-todo-jvm
+  type: ClusterIP

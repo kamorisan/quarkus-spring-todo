@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quarkus-todo-jvm
+  labels:
+    app: quarkus-todo-jvm
+    app.kubernetes.io/name: quarkus-todo-jvm
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: quarkus-spring-comparison
+    app.openshift.io/runtime: quarkus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quarkus-todo-jvm
+  template:
+    metadata:
+      labels:
+        app: quarkus-todo-jvm
+        version: v1
+    spec:
+      containers:
+      - name: quarkus-todo-jvm
+        image: IMAGE_PLACEHOLDER
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: "8080"
+        - name: QUARKUS_LOG_LEVEL
+          value: "INFO"
+        # H2 database in memory mode
+        - name: QUARKUS_DATASOURCE_JDBC_URL
+          value: "jdbc:h2:mem:tododb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /q/health/live
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /q/health/ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
