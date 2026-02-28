@@ -25,7 +25,7 @@ FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.18
 
 # Copy the application JAR
 WORKDIR /deployments
-COPY --from=builder /build/spring-todo/target/spring-todo-1.0.0-SNAPSHOT.jar /deployments/app.jar
+COPY --from=builder /build/spring-todo/target/spring-todo-0.0.1-SNAPSHOT.jar /deployments/app.jar
 
 # Set permissions for OpenShift
 USER root
