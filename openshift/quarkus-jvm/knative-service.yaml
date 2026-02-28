@@ -1,0 +1,72 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: quarkus-todo-jvm
+  labels:
+    app: quarkus-todo-jvm
+    app.kubernetes.io/name: quarkus-todo-jvm
+    app.kubernetes.io/component: serverless
+    app.kubernetes.io/part-of: quarkus-spring-comparison
+    app.openshift.io/runtime: quarkus
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scale to zero after 2 minutes of inactivity
+        autoscaling.knative.dev/scale-to-zero-pod-retention-period: "2m"
+        # Minimum number of replicas
+        autoscaling.knative.dev/min-scale: "0"
+        # Maximum number of replicas
+        autoscaling.knative.dev/max-scale: "10"
+        # Target concurrent requests per pod
+        autoscaling.knative.dev/target: "80"
+      labels:
+        app: quarkus-todo-jvm
+        version: v1
+    spec:
+      containerConcurrency: 80
+      containers:
+      - name: quarkus-todo-jvm
+        image: IMAGE_PLACEHOLDER
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: QUARKUS_HTTP_PORT
+          value: "8080"
+        - name: QUARKUS_LOG_LEVEL
+          value: "INFO"
+        # H2 database in memory mode for serverless
+        - name: QUARKUS_DATASOURCE_JDBC_URL
+          value: "jdbc:h2:mem:tododb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+        # JVM options for containerized environment
+        - name: JAVA_OPTIONS
+          value: "-Xms128m -Xmx256m -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /q/health/live
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /q/health/ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3

@@ -1,0 +1,45 @@
+# Multi-stage build for Spring Boot JVM
+# ========================================
+# Stage 1: Build the application
+# ========================================
+FROM registry.access.redhat.com/ubi9/openjdk-21:1.18 AS builder
+
+# Install git
+USER root
+RUN microdnf install -y git && microdnf clean all
+
+# Clone repository
+WORKDIR /build
+ARG GIT_REPO=https://github.com/kamorisan/quarkus-spring-todo.git
+ARG GIT_BRANCH=main
+RUN git clone --depth 1 --branch ${GIT_BRANCH} ${GIT_REPO} .
+
+# Build application
+WORKDIR /build/spring-todo
+RUN mvn package -DskipTests
+
+# ========================================
+# Stage 2: Create runtime image
+# ========================================
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.18
+
+# Copy the application JAR
+WORKDIR /deployments
+COPY --from=builder /build/spring-todo/target/spring-todo-1.0.0-SNAPSHOT.jar /deployments/app.jar
+
+# Set permissions for OpenShift
+USER root
+RUN chown -R 185:0 /deployments && \
+    chmod -R g=u /deployments
+
+# Run as non-root user
+USER 185
+
+# Expose port
+EXPOSE 8080
+
+# Set environment variables
+ENV JAVA_OPTIONS="-Dserver.port=8080 -Djava.security.egd=file:/dev/./urandom"
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/deployments/app.jar"]
