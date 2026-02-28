@@ -40,6 +40,8 @@ spec:
         # H2 database in memory mode for serverless
         - name: QUARKUS_DATASOURCE_JDBC_URL
           value: "jdbc:h2:mem:tododb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+        - name: QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION
+          value: "drop-and-create"
         resources:
           requests:
             memory: "64Mi"

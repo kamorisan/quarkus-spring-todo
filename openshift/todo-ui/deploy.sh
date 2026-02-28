@@ -10,27 +10,44 @@ set -e
 if [ $# -lt 2 ]; then
     echo "Error: Missing required arguments"
     echo ""
-    echo "Usage: $0 <BACKEND_URL> <BACKEND_TYPE>"
+    echo "Usage: $0 <BACKEND_APP_NAME> <BACKEND_TYPE> [BACKEND_NAMESPACE]"
     echo ""
     echo "Arguments:"
-    echo "  BACKEND_URL   - URL of the backend Todo API (required)"
-    echo "                  Example: https://quarkus-todo-jvm-demo-apps.apps.cluster.example.com"
-    echo "  BACKEND_TYPE  - Type of backend (quarkus or spring) (required)"
-    echo "                  Values: quarkus | spring"
+    echo "  BACKEND_APP_NAME  - Name of the backend Todo application (required)"
+    echo "                      Example: quarkus-todo-jvm, spring-todo-jvm, quarkus-todo-native"
+    echo "  BACKEND_TYPE      - Type of backend (quarkus or spring) (required)"
+    echo "                      Values: quarkus | spring"
+    echo "  BACKEND_NAMESPACE - Namespace where backend app is deployed (optional)"
+    echo "                      Default: demo-apps"
     echo ""
     echo "Examples:"
-    echo "  # Deploy with Quarkus backend"
-    echo "  $0 https://quarkus-todo-jvm-demo-apps.apps.cluster.example.com quarkus"
+    echo "  # Deploy with Quarkus backend in same namespace"
+    echo "  $0 quarkus-todo-jvm quarkus"
     echo ""
-    echo "  # Deploy with Spring Boot backend"
-    echo "  $0 https://spring-todo-jvm-demo-apps.apps.cluster.example.com spring"
+    echo "  # Deploy with Spring Boot backend in same namespace"
+    echo "  $0 spring-todo-jvm spring"
+    echo ""
+    echo "  # Deploy with backend in different namespace"
+    echo "  $0 quarkus-todo-native quarkus demo-serverless"
     echo ""
     exit 1
 fi
 
 # Parse arguments
-BACKEND_URL="$1"
+BACKEND_APP_NAME="$1"
 BACKEND_TYPE="$2"
+BACKEND_NAMESPACE="${3:-demo-apps}"
+
+# Generate internal Service URL
+# OpenShift internal Service URL format: http://<service-name>.<namespace>.svc.cluster.local:8080
+# Or simply: http://<service-name>:8080 (if in same namespace)
+if [ "$BACKEND_NAMESPACE" = "${OPENSHIFT_NAMESPACE:-demo-apps}" ]; then
+    # Same namespace - use short name
+    BACKEND_URL="http://${BACKEND_APP_NAME}:8080"
+else
+    # Different namespace - use FQDN
+    BACKEND_URL="http://${BACKEND_APP_NAME}.${BACKEND_NAMESPACE}.svc.cluster.local:8080"
+fi
 
 # Validate BACKEND_TYPE
 if [[ "$BACKEND_TYPE" != "quarkus" && "$BACKEND_TYPE" != "spring" ]]; then
@@ -56,7 +73,9 @@ echo ""
 echo "Configuration:"
 echo "  Namespace: $NAMESPACE"
 echo "  App Name: $APP_NAME"
-echo "  Backend URL: $BACKEND_URL"
+echo "  Backend App: $BACKEND_APP_NAME"
+echo "  Backend Namespace: $BACKEND_NAMESPACE"
+echo "  Backend URL (Internal): $BACKEND_URL"
 echo "  Backend Type: $BACKEND_TYPE"
 echo "  Git Repo: $GIT_REPO"
 echo "  Git Branch: $GIT_BRANCH"
