@@ -9,15 +9,18 @@ ARG GIT_BRANCH=main
 # Set working directory
 WORKDIR /build
 
-# Install git
+# Install git and clone repository
 USER root
 RUN microdnf install -y git && microdnf clean all
 
-# Clone repository and build
-USER 185
+# Clone repository
 RUN git clone --depth 1 --branch ${GIT_BRANCH} ${GIT_REPO} .
 
+# Change ownership to user 185
+RUN chown -R 185:0 /build && chmod -R g+rwX /build
+
 # Build the application
+USER 185
 WORKDIR /build/todo-ui
 RUN mvn package -DskipTests
 
