@@ -1,0 +1,114 @@
+kamori@kamori1-mac subaru % ./bench/run_benchmark.sh
+=========================================
+  Quarkus vs Spring Boot Benchmark
+  (3-Way Comparison)
+=========================================
+
+Checking build artifacts...
+  Quarkus Native: ✅ Found
+  Quarkus JVM:    ✅ Found
+  Spring JVM:     ✅ Found
+
+This benchmark will measure:
+  1. Quarkus Native Image ⚡
+  2. Quarkus JVM
+  3. Spring Boot JVM
+
+
+=========================================
+  1/3: Testing Quarkus Native Image
+=========================================
+
+Cleaning up data directory...
+Starting Quarkus Native application...
+Quarkus Native started with PID: 6029
+Log file: logs/quarkus-native.log
+Waiting for application to be ready at http://localhost:8081/health/ready...
+Application ready in 47ms (.047757000s)
+Measuring idle metrics for 60 seconds...
+Measuring PID 6029 for 60s...
+Measurement complete. Results saved to /Users/kamori/vscode/customer/subaru/results/quarkus-native_idle.csv
+Stopping Quarkus Native...
+
+=========================================
+  2/3: Testing Quarkus JVM
+=========================================
+
+Cleaning up data directory...
+Starting Quarkus JVM application...
+Quarkus started with PID: 6898
+Log file: logs/quarkus.log
+Waiting for application to be ready at http://localhost:8081/health/ready...
+Application ready in 111ms (.111841000s)
+Measuring idle metrics for 60 seconds...
+Measuring PID 6898 for 60s...
+Measurement complete. Results saved to /Users/kamori/vscode/customer/subaru/results/quarkus_idle.csv
+Stopping Quarkus JVM...
+
+=========================================
+  3/3: Testing Spring Boot JVM
+=========================================
+
+Cleaning up data directory...
+Starting Spring Boot application...
+Spring Boot started with PID: 7767
+Log file: logs/spring.log
+Waiting for application to be ready at http://localhost:8082/health/ready...
+Application ready in 2832ms (2.832542000s)
+Measuring idle metrics for 60 seconds...
+Measuring PID 7767 for 60s...
+Measurement complete. Results saved to /Users/kamori/vscode/customer/subaru/results/spring_idle.csv
+Stopping Spring Boot JVM...
+
+=========================================
+  Benchmark Complete
+=========================================
+
+=========================================
+  Quarkus vs Spring Boot Benchmark Summary
+  (3-Way Comparison)
+=========================================
+
+Quarkus Native Startup Time: 3ms
+Quarkus JVM Startup Time: 61ms
+Spring Boot JVM Startup Time: 1156ms
+
+-----------------------------------------
+Memory Usage (Idle)
+-----------------------------------------
+Quarkus Native Max RSS: 68464 KB (66.85 MB)
+Quarkus Native Avg RSS: 59223 KB (57.83 MB)
+Quarkus JVM Max RSS: 266736 KB (260.48 MB)
+Quarkus JVM Avg RSS: 102618 KB (100.21 MB)
+Spring Boot JVM Max RSS: 364112 KB (355.57 MB)
+Spring Boot JVM Avg RSS: 134323 KB (131.17 MB)
+
+-----------------------------------------
+CPU Usage (Idle)
+-----------------------------------------
+Quarkus Native Max CPU: 1.2%
+Quarkus Native Avg CPU: 0.02%
+Quarkus JVM Max CPU: 48.0%
+Quarkus JVM Avg CPU: 1.01%
+Spring Boot JVM Max CPU: 94.5%
+Spring Boot JVM Avg CPU: 1.98%
+
+=========================================
+
+Summary Comparison:
+
+Startup Time Comparison:
+  Quarkus Native: 3ms (1.0x baseline)
+  Quarkus JVM:    61ms (20.3x slower than Native)
+  Spring JVM:     1156ms (385.3x slower than Native)
+
+Memory Usage Comparison (Average):
+  Quarkus Native: 57.83 MB
+  Quarkus JVM:    100.21 MB
+  Spring JVM:     131.17 MB
+
+Memory Savings:
+  Native saves 42.3% vs Quarkus JVM (1.7x less memory)
+  Native saves 55.9% vs Spring JVM (2.3x less memory)
+
+=========================================

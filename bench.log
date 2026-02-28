@@ -1,0 +1,38 @@
+=========================================
+  Quarkus vs Spring Boot Benchmark Summary
+=========================================
+
+Quarkus Startup Time: 2026
+02
+22
+16
+16
+56
+600
+51ms
+Spring Boot Startup Time: 2026
+02
+22
+16
+18
+03
+907
+712ms
+
+-----------------------------------------
+Memory Usage (Idle)
+-----------------------------------------
+Quarkus Max RSS: 229120 KB (223.75 MB)
+Quarkus Avg RSS: 229011 KB (223.64 MB)
+Spring Boot Max RSS: 323168 KB (315.59 MB)
+Spring Boot Avg RSS: 323080 KB (315.50 MB)
+
+-----------------------------------------
+CPU Usage (Idle)
+-----------------------------------------
+Quarkus Max CPU: 44.1%
+Quarkus Avg CPU: 0.86%
+Spring Boot Max CPU: 209.6%
+Spring Boot Avg CPU: 3.95%
+
+=========================================

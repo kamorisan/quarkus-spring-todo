@@ -1,0 +1,40 @@
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-02-22 16:03:49.660 INFO  [com.demo.SpringTodoApplication] - Starting SpringTodoApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 74867 (/Users/kamori/vscode/customer/subaru/spring-todo/target/spring-todo-0.0.1-SNAPSHOT.jar started by kamori in /Users/kamori/vscode/customer/subaru)
+2026-02-22 16:03:49.661 INFO  [com.demo.SpringTodoApplication] - No active profile set, falling back to 1 default profile: "default"
+2026-02-22 16:03:50.236 INFO  [o.s.d.r.c.RepositoryConfigurationDelegate] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-22 16:03:50.257 INFO  [o.s.d.r.c.RepositoryConfigurationDelegate] - Finished Spring Data repository scanning in 17 ms. Found 1 JPA repository interface.
+2026-02-22 16:03:50.564 INFO  [o.s.b.w.e.tomcat.TomcatWebServer] - Tomcat initialized with port 8082 (http)
+2026-02-22 16:03:50.569 INFO  [o.a.catalina.core.StandardService] - Starting service [Tomcat]
+2026-02-22 16:03:50.570 INFO  [o.a.catalina.core.StandardEngine] - Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-02-22 16:03:50.584 INFO  [o.a.c.c.C.[Tomcat].[localhost].[/]] - Initializing Spring embedded WebApplicationContext
+2026-02-22 16:03:50.584 INFO  [o.s.b.w.s.c.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 887 ms
+2026-02-22 16:03:50.737 INFO  [o.h.jpa.internal.util.LogHelper] - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-22 16:03:50.762 INFO  [org.hibernate.Version] - HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-02-22 16:03:50.776 INFO  [o.h.c.i.RegionFactoryInitiator] - HHH000026: Second-level cache disabled
+2026-02-22 16:03:50.907 INFO  [o.s.o.j.p.SpringPersistenceUnitInfo] - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-22 16:03:50.920 INFO  [com.zaxxer.hikari.HikariDataSource] - HikariPool-1 - Starting...
+2026-02-22 16:03:51.023 INFO  [com.zaxxer.hikari.pool.HikariPool] - HikariPool-1 - Added connection conn0: url=jdbc:h2:file:./data/todo-db user=SA
+2026-02-22 16:03:51.024 INFO  [com.zaxxer.hikari.HikariDataSource] - HikariPool-1 - Start completed.
+2026-02-22 16:03:51.430 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-22 16:03:51.451 INFO  [o.s.o.j.LocalContainerEntityManagerFactoryBean] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 16:03:51.681 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-22 16:03:52.032 INFO  [o.s.b.a.e.web.EndpointLinksResolver] - Exposing 2 endpoints beneath base path '/actuator'
+2026-02-22 16:03:52.078 INFO  [o.s.b.w.e.tomcat.TomcatWebServer] - Tomcat started on port 8082 (http) with context path '/'
+2026-02-22 16:03:52.088 INFO  [com.demo.SpringTodoApplication] - Started SpringTodoApplication in 2.612 seconds (process running for 2.838)
+2026-02-22 16:03:52.128 INFO  [com.demo.health.ReadinessService] - Application ready event received
+2026-02-22 16:03:52.189 INFO  [com.demo.health.ReadinessService] - APP_READY_MS=731
+2026-02-22 16:04:03.251 INFO  [o.a.c.c.C.[Tomcat].[localhost].[/]] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-22 16:04:03.251 INFO  [o.s.web.servlet.DispatcherServlet] - Initializing Servlet 'dispatcherServlet'
+2026-02-22 16:04:03.252 INFO  [o.s.web.servlet.DispatcherServlet] - Completed initialization in 1 ms
+2026-02-22 16:04:57.976 INFO  [o.s.api.AbstractOpenApiResource] - Init duration for springdoc-openapi is: 142 ms
+2026-02-22 16:05:20.857 INFO  [o.s.o.j.LocalContainerEntityManagerFactoryBean] - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-22 16:05:20.902 INFO  [com.zaxxer.hikari.HikariDataSource] - HikariPool-1 - Shutdown initiated...
+2026-02-22 16:05:20.951 INFO  [com.zaxxer.hikari.HikariDataSource] - HikariPool-1 - Shutdown completed.

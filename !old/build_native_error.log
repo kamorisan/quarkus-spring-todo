@@ -1,0 +1,72 @@
+kamori@kamori1-mac subaru % ./build_native.sh
+=========================================
+  Building Quarkus Native Image
+=========================================
+
+Building with local GraalVM...
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.demo:quarkus-todo >------------------------
+[INFO] Building quarkus-todo 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ quarkus-todo ---
+[INFO] Deleting /Users/kamori/vscode/customer/subaru/quarkus-todo/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ quarkus-todo ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- quarkus:3.17.0:generate-code (default) @ quarkus-todo ---
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ quarkus-todo ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 10 source files with javac [debug parameters target 21] to target/classes
+[INFO] 
+[INFO] --- quarkus:3.17.0:generate-code-tests (default) @ quarkus-todo ---
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ quarkus-todo ---
+[INFO] skip non existing resourceDirectory /Users/kamori/vscode/customer/subaru/quarkus-todo/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ quarkus-todo ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ quarkus-todo ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ quarkus-todo ---
+[INFO] Building jar: /Users/kamori/vscode/customer/subaru/quarkus-todo/target/quarkus-todo-1.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- quarkus:3.17.0:build (default) @ quarkus-todo ---
+[WARNING] [io.quarkus.deployment.configuration] Configuration property 'quarkus.package.type' has been deprecated and replaced by: [quarkus.package.jar.enabled, quarkus.package.jar.type, quarkus.native.enabled, quarkus.native.sources-only]
+[INFO] [io.quarkus.deployment.pkg.steps.JarResultBuildStep] Building native image source jar: /Users/kamori/vscode/customer/subaru/quarkus-todo/target/quarkus-todo-1.0.0-SNAPSHOT-native-image-source-jar/quarkus-todo-1.0.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Building native image from /Users/kamori/vscode/customer/subaru/quarkus-todo/target/quarkus-todo-1.0.0-SNAPSHOT-native-image-source-jar/quarkus-todo-1.0.0-SNAPSHOT-runner.jar
+[INFO] [io.quarkus.deployment.pkg.steps.NativeImageBuildStep] Running Quarkus native-image plugin on GRAALVM 22.3.1 JDK 17.0.6+10-jvmci-22.3-b13
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.385 s
+[INFO] Finished at: 2026-02-22T16:35:53+09:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal io.quarkus.platform:quarkus-maven-plugin:3.17.0:build (default) on project quarkus-todo: Failed to build quarkus application: io.quarkus.builder.BuildException: Build failure: Build failed due to errors
+[ERROR]         [error]: Build step io.quarkus.deployment.pkg.steps.NativeImageBuildStep#build threw an exception: java.lang.IllegalStateException: Out of date version of GraalVM or Mandrel detected: 22.3.1. Quarkus currently supports 23.1.0. Please upgrade to this version.
+[ERROR]         at io.quarkus.deployment.pkg.steps.NativeImageBuildStep.checkGraalVMVersion(NativeImageBuildStep.java:504)
+[ERROR]         at io.quarkus.deployment.pkg.steps.NativeImageBuildStep.build(NativeImageBuildStep.java:243)
+[ERROR]         at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(MethodHandle.java:733)
+[ERROR]         at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:856)
+[ERROR]         at io.quarkus.builder.BuildContext.run(BuildContext.java:256)
+[ERROR]         at org.jboss.threads.ContextHandler$1.runWith(ContextHandler.java:18)
+[ERROR]         at org.jboss.threads.EnhancedQueueExecutor$Task.doRunWith(EnhancedQueueExecutor.java:2675)
+[ERROR]         at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2654)
+[ERROR]         at org.jboss.threads.EnhancedQueueExecutor.runThreadBody(EnhancedQueueExecutor.java:1627)
+[ERROR]         at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1594)
+[ERROR]         at java.base/java.lang.Thread.run(Thread.java:1583)
+[ERROR]         at org.jboss.threads.JBossThread.run(JBossThread.java:499)
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+kamori@kamori1-mac subaru % 
