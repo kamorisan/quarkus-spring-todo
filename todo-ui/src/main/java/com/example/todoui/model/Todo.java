@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Todo {
 
     @JsonProperty("id")
-    private Long id;
+    private String id;
 
     @JsonProperty("title")
     private String title;
@@ -19,18 +19,18 @@ public class Todo {
     public Todo() {
     }
 
-    public Todo(Long id, String title, String description, Boolean completed) {
+    public Todo(String id, String title, String description, Boolean completed) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.completed = completed;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
