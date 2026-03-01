@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SERVICE_URL=https://quarkus-todo-native-demo-serverless.apps.cluster-5rxv7.5rxv7.sandbox2408.opentlc.com
-#SERVICE_URL=https://quarkus-todo-jvm-demo-serverless.apps.cluster-5rxv7.5rxv7.sandbox2408.opentlc.com
+#SERVICE_URL=https://quarkus-todo-native-demo-serverless.apps.cluster-5rxv7.5rxv7.sandbox2408.opentlc.com
+SERVICE_URL=https://quarkus-todo-jvm-demo-serverless.apps.cluster-5rxv7.5rxv7.sandbox2408.opentlc.com
 #SERVICE_URL=https://spring-todo-jvm-demo-serverless.apps.cluster-5rxv7.5rxv7.sandbox2408.opentlc.com/
 
 echo "========================================="
